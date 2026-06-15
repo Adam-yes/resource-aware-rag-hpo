@@ -15,11 +15,16 @@
 </p>
 
 <p align="center">
+  RAG configuration is a costly mixed-integer engineering problem: chunking, retrieval depth, decoding, and model choice interact in ways that directly affect quality, latency, and local compute cost. This project applies evolutionary search to find resource-aware Naive-RAG configurations and documents the trade-offs a technical leader would need before deploying such a system.
+</p>
+
+<p align="center">
   <a href="#why-it-matters">Why it matters</a> |
   <a href="#results-at-a-glance">Results</a> |
   <a href="#quick-start">Quick start</a> |
   <a href="#reproduce-the-study">Reproduce</a> |
-  <a href="docs/methodology.md">Methodology</a>
+  <a href="docs/DESIGN.md">Design</a> |
+  <a href="docs/RESULTS.md">Results</a>
 </p>
 
 ---
@@ -31,6 +36,8 @@ Manufacturing teams rely on technical documentation for maintenance, troubleshoo
 This repository turns RAG configuration into an engineering optimization problem: a genetic algorithm searches the mixed hyperparameter space and evaluates each candidate end to end using factual correctness.
 
 > This repository accompanies the under-review manuscript **"Evolutionary Hyperparameter Optimization of Resource-Aware Naive-RAG Pipelines for Technical Knowledge Access in Manufacturing"**.
+
+For the architectural reasoning behind the project, read [docs/DESIGN.md](docs/DESIGN.md). For the durable results summary, read [docs/RESULTS.md](docs/RESULTS.md). For decision records, see [docs/adr/](docs/adr/).
 
 ## Results At A Glance
 
@@ -131,6 +138,31 @@ This repository does **not** redistribute third-party technical manuals, model w
 - Data availability: [docs/data-availability.md](docs/data-availability.md)
 - Model attribution: [docs/model-attribution.md](docs/model-attribution.md)
 - Reproduction guide: [docs/reproduction.md](docs/reproduction.md)
+- Improvement audit: [docs/improvement-audit.md](docs/improvement-audit.md)
+- Roadmap: [ROADMAP.md](ROADMAP.md)
+
+## Repository Metadata
+
+Recommended GitHub metadata setup:
+
+```bash
+gh repo edit Adam-yes/resource-aware-rag-hpo \
+  --description "Resource-aware evolutionary HPO for local Naive-RAG pipelines in manufacturing" \
+  --homepage "https://github.com/Adam-yes/resource-aware-rag-hpo" \
+  --add-topic rag \
+  --add-topic retrieval-augmented-generation \
+  --add-topic genetic-algorithm \
+  --add-topic hyperparameter-optimization \
+  --add-topic ollama \
+  --add-topic langchain \
+  --add-topic manufacturing \
+  --add-topic ragas \
+  --add-topic resource-aware-ai
+```
+
+## Author And Portfolio
+
+This repository is designed as a public research-software artifact and as part of a broader engineering portfolio. The reusable presentation pattern is: outcome-first README, compact architecture visuals, explicit design trade-offs, ADRs, reproducibility policy, and visible CI/test discipline.
 
 ## Citation
 
