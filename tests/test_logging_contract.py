@@ -3,7 +3,7 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from evo_rag_hpo.evaluate import LOG_FIELDNAMES
+from evo_rag_hpo.schema import HPO_HISTORY_FIELDNAMES, LOG_FIELDNAMES
 
 
 class LoggingContractTests(unittest.TestCase):
@@ -34,7 +34,9 @@ class LoggingContractTests(unittest.TestCase):
             self.assertEqual(loaded["Hash Id"], "20195b88")
             self.assertEqual(loaded["model_name"], "granite3.3:2b")
 
+    def test_hpo_history_schema_is_declared(self):
+        self.assertEqual(HPO_HISTORY_FIELDNAMES, ["Hash Id", "gen", "ind_id", "fitness", "params_list"])
+
 
 if __name__ == "__main__":
     unittest.main()
-

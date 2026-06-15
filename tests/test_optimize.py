@@ -16,6 +16,14 @@ class OptimizeTests(unittest.TestCase):
         self.assertEqual(len(mutated), len(limits))
         self.assertTrue(all(0 <= gene <= limit for gene, limit in zip(mutated, limits)))
 
+    def test_mutation_bounds_across_many_seeds(self):
+        limits = search_space_limits(DEFAULT_CONFIG)
+        for seed in range(100):
+            random.seed(seed)
+            individual = [random.randint(0, limit) for limit in limits]
+            mutated = mutate_hpo_space(individual, indpb=0.75, limits=limits)[0]
+            self.assertTrue(all(0 <= gene <= limit for gene, limit in zip(mutated, limits)))
+
     def test_categorical_model_mutation_changes_model_when_possible(self):
         random.seed(1)
         limits = search_space_limits(DEFAULT_CONFIG)
@@ -28,4 +36,3 @@ class OptimizeTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
-
