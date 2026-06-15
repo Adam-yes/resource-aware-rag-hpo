@@ -4,12 +4,15 @@ from __future__ import annotations
 
 import argparse
 import asyncio
+import json
 import random
+from pathlib import Path
 from typing import Sequence
 
 from .config import decode_individual, ensure_output_directories, load_config, resolve_project_path, search_space_limits
 from .elitism import ea_simple_with_elitism
 from .evaluate import run_async_evaluate
+from .runtime import configure_logging, set_deterministic_seed
 
 
 def mutate_hpo_space(individual: list[int], indpb: float, limits: Sequence[int]) -> tuple[list[int]]:
@@ -43,10 +46,11 @@ def run_optimization(config_path: str | None = None) -> None:
 
     config = load_config(config_path)
     ensure_output_directories(config)
+    configure_logging(config["logging"]["level"])
 
     opt = config["optimization"]
     limits = search_space_limits(config)
-    random.seed(opt["random_seed"])
+    set_deterministic_seed(opt["random_seed"])
 
     if not hasattr(creator, "FitnessMax"):
         creator.create("FitnessMax", base.Fitness, weights=(1.0,))
@@ -71,12 +75,15 @@ def run_optimization(config_path: str | None = None) -> None:
     toolbox.register("mate", tools.cxUniform, indpb=0.5)
     toolbox.register("mutate", mutate_hpo_space, indpb=opt["individual_mutation_probability"], limits=limits)
 
-    fitness_archive: dict[tuple[int, ...], tuple[float]] = {}
+    archive_path = resolve_project_path(config["paths"]["fitness_archive"])
+    fitness_archive = _load_fitness_archive(archive_path)
+    loop = asyncio.new_event_loop()
 
     def fitness_wrapper(individual: list[int]) -> tuple[float]:
         key = tuple(individual)
         if key not in fitness_archive:
-            fitness_archive[key] = asyncio.run(run_async_evaluate(list(individual), config))
+            fitness_archive[key] = loop.run_until_complete(run_async_evaluate(list(individual), config))
+            _save_fitness_archive(archive_path, fitness_archive)
         return fitness_archive[key]
 
     toolbox.register("evaluate", fitness_wrapper)
@@ -87,18 +94,23 @@ def run_optimization(config_path: str | None = None) -> None:
     stats.register("avg", np.mean)
     stats.register("max", np.max)
 
-    _, logbook = ea_simple_with_elitism(
-        population=population,
-        toolbox=toolbox,
-        cxpb=opt["crossover_probability"],
-        mutpb=opt["mutation_probability"],
-        ngen=opt["max_generations"],
-        stats=stats,
-        halloffame=halloffame,
-        verbose=True,
-        filename=str(resolve_project_path(config["paths"]["hpo_history"])),
-        min_improvement=opt["early_stopping_min_improvement"],
-    )
+    try:
+        _, logbook = ea_simple_with_elitism(
+            population=population,
+            toolbox=toolbox,
+            cxpb=opt["crossover_probability"],
+            mutpb=opt["mutation_probability"],
+            ngen=opt["max_generations"],
+            stats=stats,
+            halloffame=halloffame,
+            verbose=True,
+            filename=str(resolve_project_path(config["paths"]["hpo_history"])),
+            min_improvement=opt["early_stopping_min_improvement"],
+            patience=opt["early_stopping_patience"],
+            stopping_metric=opt["early_stopping_metric"],
+        )
+    finally:
+        loop.close()
 
     best = halloffame[0]
     print(logbook)
@@ -106,6 +118,21 @@ def run_optimization(config_path: str | None = None) -> None:
     print(f"Fitness: {best.fitness.values[0]:.4f}")
     print(f"Genes: {list(best)}")
     print(f"Parameters: {decode_individual(best, config)}")
+
+
+def _load_fitness_archive(path: Path) -> dict[tuple[int, ...], tuple[float]]:
+    if not path.exists():
+        return {}
+    with path.open("r", encoding="utf-8") as file:
+        data = json.load(file)
+    return {tuple(int(part) for part in key.split(",")): (float(value),) for key, value in data.items()}
+
+
+def _save_fitness_archive(path: Path, archive: dict[tuple[int, ...], tuple[float]]) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    data = {",".join(str(gene) for gene in key): value[0] for key, value in archive.items()}
+    with path.open("w", encoding="utf-8") as file:
+        json.dump(data, file, indent=2, sort_keys=True)
 
 
 def main() -> None:
@@ -117,4 +144,3 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
-
