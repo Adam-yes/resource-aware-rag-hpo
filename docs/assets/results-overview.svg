@@ -1,13 +1,13 @@
-<svg width="1280" height="760" viewBox="0 0 1280 760" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc">
+<svg width="1280" height="780" viewBox="0 0 1280 780" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc">
   <title id="title">Resource-Aware RAG HPO results overview</title>
-  <desc id="desc">A consistent visual summary of the study findings: fitness improvement, search efficiency, quality-latency tradeoff, and key drivers.</desc>
-  <rect width="1280" height="760" fill="#F7F8FA"/>
-  <rect x="54" y="50" width="1172" height="660" rx="24" fill="#FFFFFF" stroke="#D8DEE8" stroke-width="2"/>
-
-  <text x="94" y="104" fill="#16202A" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="34" font-weight="760">Results Overview</text>
-  <text x="94" y="136" fill="#52606D" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="17">Curated findings from the evolutionary search over local resource-aware Naive-RAG configurations.</text>
+  <desc id="desc">A visual summary of the study findings: fitness improvement, search efficiency, quality-latency tradeoff, and key drivers.</desc>
+  <rect width="1280" height="780" fill="#F7F8FA"/>
+  <rect x="54" y="50" width="1172" height="680" rx="24" fill="#FFFFFF" stroke="#D8DEE8" stroke-width="2"/>
 
   <g font-family="Inter, Segoe UI, Arial, sans-serif">
+    <text x="94" y="104" fill="#16202A" font-size="34" font-weight="760">Results Overview</text>
+    <text x="94" y="136" fill="#52606D" font-size="17">Curated findings from the evolutionary search over local resource-aware Naive-RAG configurations.</text>
+
     <rect x="94" y="176" width="260" height="150" rx="18" fill="#16202A"/>
     <text x="124" y="222" fill="#FFFFFF" font-size="46" font-weight="780">~80%</text>
     <text x="126" y="257" fill="#DDE5EF" font-size="18" font-weight="700">fitness increase</text>
@@ -27,40 +27,48 @@
     <text x="686" y="306" fill="#71511E" font-size="14">search over the defined space.</text>
 
     <rect x="934" y="176" width="260" height="150" rx="18" fill="#EDF2FF" stroke="#6E88D8" stroke-width="2"/>
-    <text x="964" y="222" fill="#202E57" font-size="46" font-weight="780">86%</text>
-    <text x="1042" y="222" fill="#202E57" font-size="22" font-weight="760">quality</text>
-    <text x="966" y="257" fill="#202E57" font-size="18" font-weight="700">at 7% inference time</text>
-    <text x="966" y="286" fill="#41537E" font-size="14">Compact models expose practical</text>
-    <text x="966" y="306" fill="#41537E" font-size="14">deployment tradeoffs.</text>
+    <text x="964" y="217" fill="#202E57" font-size="44" font-weight="780">86%</text>
+    <text x="966" y="252" fill="#202E57" font-size="18" font-weight="760">of maximum quality</text>
+    <text x="966" y="282" fill="#202E57" font-size="18" font-weight="700">at 7% inference time</text>
+    <text x="966" y="306" fill="#41537E" font-size="14">Compact models expose deployment tradeoffs.</text>
 
-    <rect x="94" y="370" width="540" height="278" rx="18" fill="#FFFFFF" stroke="#D8DEE8" stroke-width="2"/>
+    <rect x="94" y="370" width="540" height="298" rx="18" fill="#FFFFFF" stroke="#D8DEE8" stroke-width="2"/>
     <text x="126" y="414" fill="#16202A" font-size="22" font-weight="760">Optimization signal</text>
     <text x="126" y="442" fill="#52606D" font-size="15">The search raises both average and best observed fitness.</text>
-    <line x1="136" y1="584" x2="582" y2="584" stroke="#C7D0DD" stroke-width="2"/>
-    <line x1="136" y1="476" x2="136" y2="584" stroke="#C7D0DD" stroke-width="2"/>
-    <polyline points="146,570 206,552 266,534 326,511 386,492 446,474 566,454" stroke="#16202A" stroke-width="5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-    <polyline points="146,566 206,561 266,548 326,536 386,520 446,508 566,488" stroke="#66B7A6" stroke-width="5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+    <line x1="162" y1="590" x2="582" y2="590" stroke="#C7D0DD" stroke-width="2"/>
+    <line x1="162" y1="476" x2="162" y2="590" stroke="#C7D0DD" stroke-width="2"/>
+    <text x="116" y="536" fill="#52606D" font-size="13" transform="rotate(-90 116 536)">Fitness F1 (unitless)</text>
+    <text x="314" y="637" fill="#52606D" font-size="13">Generation (index)</text>
+    <text x="142" y="595" text-anchor="end" fill="#7B8794" font-size="12">0.0</text>
+    <text x="142" y="537" text-anchor="end" fill="#7B8794" font-size="12">0.5</text>
+    <text x="142" y="480" text-anchor="end" fill="#7B8794" font-size="12">1.0</text>
+    <text x="166" y="612" fill="#7B8794" font-size="12">0</text>
+    <text x="552" y="612" fill="#7B8794" font-size="12">G</text>
+    <polyline points="174,576 234,556 294,536 354,512 414,493 474,474 566,454" stroke="#16202A" stroke-width="5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+    <polyline points="174,570 234,562 294,550 354,538 414,522 474,509 566,489" stroke="#66B7A6" stroke-width="5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
     <circle cx="566" cy="454" r="7" fill="#16202A"/>
-    <circle cx="566" cy="488" r="7" fill="#66B7A6"/>
-    <text x="144" y="615" fill="#52606D" font-size="13">generation 0</text>
-    <text x="506" y="615" fill="#52606D" font-size="13">final generation</text>
-    <rect x="384" y="395" width="20" height="6" rx="3" fill="#16202A"/>
-    <text x="412" y="402" fill="#52606D" font-size="13">best fitness</text>
-    <rect x="506" y="395" width="20" height="6" rx="3" fill="#66B7A6"/>
-    <text x="534" y="402" fill="#52606D" font-size="13">average fitness</text>
+    <circle cx="566" cy="489" r="7" fill="#66B7A6"/>
+    <rect x="382" y="395" width="20" height="6" rx="3" fill="#16202A"/>
+    <text x="410" y="402" fill="#52606D" font-size="13">best fitness</text>
+    <rect x="504" y="395" width="20" height="6" rx="3" fill="#66B7A6"/>
+    <text x="532" y="402" fill="#52606D" font-size="13">average fitness</text>
 
-    <rect x="654" y="370" width="540" height="278" rx="18" fill="#FFFFFF" stroke="#D8DEE8" stroke-width="2"/>
+    <rect x="654" y="370" width="540" height="298" rx="18" fill="#FFFFFF" stroke="#D8DEE8" stroke-width="2"/>
     <text x="686" y="414" fill="#16202A" font-size="22" font-weight="760">Configuration drivers</text>
     <text x="686" y="442" fill="#52606D" font-size="15">Performance is driven by interacting retrieval and generation choices.</text>
-    <text x="704" y="493" fill="#394B59" font-size="15" font-weight="700">top_k</text>
-    <rect x="828" y="476" width="292" height="24" rx="12" fill="#EAF7F4"/>
-    <rect x="828" y="476" width="246" height="24" rx="12" fill="#66B7A6"/>
-    <text x="704" y="542" fill="#394B59" font-size="15" font-weight="700">model choice</text>
-    <rect x="828" y="525" width="292" height="24" rx="12" fill="#EDF2FF"/>
-    <rect x="828" y="525" width="220" height="24" rx="12" fill="#6E88D8"/>
-    <text x="704" y="591" fill="#394B59" font-size="15" font-weight="700">chunk size</text>
-    <rect x="828" y="574" width="292" height="24" rx="12" fill="#FFF4E0"/>
-    <rect x="828" y="574" width="184" height="24" rx="12" fill="#E0A13D"/>
-    <text x="704" y="624" fill="#52606D" font-size="13">Relative importance summary for landing-page orientation.</text>
+    <text x="702" y="492" fill="#394B59" font-size="15" font-weight="700">top_k</text>
+    <rect x="834" y="474" width="292" height="24" rx="12" fill="#EAF7F4"/>
+    <rect x="834" y="474" width="246" height="24" rx="12" fill="#66B7A6"/>
+    <text x="702" y="541" fill="#394B59" font-size="15" font-weight="700">model choice</text>
+    <rect x="834" y="523" width="292" height="24" rx="12" fill="#EDF2FF"/>
+    <rect x="834" y="523" width="220" height="24" rx="12" fill="#6E88D8"/>
+    <text x="702" y="590" fill="#394B59" font-size="15" font-weight="700">chunk size</text>
+    <rect x="834" y="572" width="292" height="24" rx="12" fill="#FFF4E0"/>
+    <rect x="834" y="572" width="184" height="24" rx="12" fill="#E0A13D"/>
+    <line x1="834" y1="626" x2="1126" y2="626" stroke="#C7D0DD" stroke-width="2"/>
+    <text x="834" y="646" text-anchor="middle" fill="#7B8794" font-size="12">0.0</text>
+    <text x="980" y="646" text-anchor="middle" fill="#7B8794" font-size="12">0.5</text>
+    <text x="1126" y="646" text-anchor="middle" fill="#7B8794" font-size="12">1.0</text>
+    <text x="980" y="666" text-anchor="middle" fill="#52606D" font-size="13">Relative importance (normalized, unitless)</text>
   </g>
 </svg>

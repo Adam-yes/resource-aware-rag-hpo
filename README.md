@@ -50,11 +50,12 @@ The README uses a custom results overview so the public landing page keeps consi
 | [Interaction heatmap](results/figures/heatmap_f1_temp_chunk_top.png) | Interaction between retrieval depth, chunking, and temperature |
 | [Model clusters](results/figures/model_cluster.png) | Grouping of model behavior in the search results |
 | [Top-k distribution](results/figures/Top_k_distribution.png) | Evolutionary concentration over retrieval depth |
+| [Original method schematic](results/figures/Hyperparameter_Optimierung_Methode.png) | Paper-native schematic retained as a full-size artifact |
 
 ## System Architecture
 
 <p align="center">
-  <img src="results/figures/Hyperparameter_Optimierung_Methode.png" alt="RAG optimization workflow" width="90%">
+  <img src="docs/assets/system-architecture.svg" alt="System architecture for resource-aware RAG HPO" width="100%">
 </p>
 
 The workflow combines:

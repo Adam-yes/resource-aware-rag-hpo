@@ -1,0 +1,70 @@
+<svg width="1280" height="660" viewBox="0 0 1280 660" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc">
+  <title id="title">System architecture for resource-aware RAG HPO</title>
+  <desc id="desc">A modern diagram of the genetic optimizer controlling indexing, retrieval, generation, and evaluation in a Naive-RAG pipeline.</desc>
+  <rect width="1280" height="660" fill="#F7F8FA"/>
+  <rect x="54" y="48" width="1172" height="564" rx="24" fill="#FFFFFF" stroke="#D8DEE8" stroke-width="2"/>
+
+  <defs>
+    <marker id="arrow" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto" markerUnits="strokeWidth">
+      <path d="M2 2L10 6L2 10Z" fill="#52606D"/>
+    </marker>
+    <marker id="arrow-dark" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto" markerUnits="strokeWidth">
+      <path d="M2 2L10 6L2 10Z" fill="#16202A"/>
+    </marker>
+  </defs>
+
+  <g font-family="Inter, Segoe UI, Arial, sans-serif">
+    <text x="94" y="104" fill="#16202A" font-size="34" font-weight="760">System Architecture</text>
+    <text x="94" y="136" fill="#52606D" font-size="17">A Naive-RAG pipeline configured by evolutionary search and evaluated with factual correctness.</text>
+
+    <rect x="392" y="164" width="496" height="76" rx="18" fill="#16202A"/>
+    <text x="640" y="197" text-anchor="middle" fill="#FFFFFF" font-size="22" font-weight="760">Genetic Algorithm Optimizer</text>
+    <text x="640" y="222" text-anchor="middle" fill="#B8C4D6" font-size="14">population N, generation G, elitism, mutation, crossover</text>
+
+    <rect x="114" y="312" width="166" height="92" rx="16" fill="#F2F5F8" stroke="#7B8794" stroke-width="2"/>
+    <text x="197" y="348" text-anchor="middle" fill="#1F2933" font-size="18" font-weight="730">Documents</text>
+    <text x="197" y="374" text-anchor="middle" fill="#52606D" font-size="14">licensed technical</text>
+    <text x="197" y="394" text-anchor="middle" fill="#52606D" font-size="14">manuals</text>
+
+    <rect x="328" y="312" width="166" height="92" rx="16" fill="#EAF7F4" stroke="#66B7A6" stroke-width="2"/>
+    <text x="411" y="348" text-anchor="middle" fill="#15352F" font-size="18" font-weight="730">Indexing</text>
+    <text x="411" y="374" text-anchor="middle" fill="#355B53" font-size="14">chunk size</text>
+    <text x="411" y="394" text-anchor="middle" fill="#355B53" font-size="14">chunk overlap</text>
+
+    <rect x="542" y="312" width="166" height="92" rx="16" fill="#FFF4E0" stroke="#E0A13D" stroke-width="2"/>
+    <text x="625" y="348" text-anchor="middle" fill="#4A3010" font-size="18" font-weight="730">Retrieval</text>
+    <text x="625" y="374" text-anchor="middle" fill="#71511E" font-size="14">Chroma vector</text>
+    <text x="625" y="394" text-anchor="middle" fill="#71511E" font-size="14">store + top-k</text>
+
+    <rect x="756" y="312" width="166" height="92" rx="16" fill="#EDF2FF" stroke="#6E88D8" stroke-width="2"/>
+    <text x="839" y="348" text-anchor="middle" fill="#202E57" font-size="18" font-weight="730">Generation</text>
+    <text x="839" y="374" text-anchor="middle" fill="#41537E" font-size="14">model choice</text>
+    <text x="839" y="394" text-anchor="middle" fill="#41537E" font-size="14">temperature</text>
+
+    <rect x="970" y="312" width="166" height="92" rx="16" fill="#F2F5F8" stroke="#7B8794" stroke-width="2"/>
+    <text x="1053" y="348" text-anchor="middle" fill="#1F2933" font-size="18" font-weight="730">Evaluation</text>
+    <text x="1053" y="374" text-anchor="middle" fill="#52606D" font-size="14">Ragas factual</text>
+    <text x="1053" y="394" text-anchor="middle" fill="#52606D" font-size="14">correctness F1</text>
+
+    <path d="M280 358H318" stroke="#52606D" stroke-width="3" marker-end="url(#arrow)"/>
+    <path d="M494 358H532" stroke="#52606D" stroke-width="3" marker-end="url(#arrow)"/>
+    <path d="M708 358H746" stroke="#52606D" stroke-width="3" marker-end="url(#arrow)"/>
+    <path d="M922 358H960" stroke="#52606D" stroke-width="3" marker-end="url(#arrow)"/>
+
+    <path d="M472 244V296" stroke="#66B7A6" stroke-width="3" stroke-dasharray="7 7" marker-end="url(#arrow)"/>
+    <path d="M640 244V296" stroke="#E0A13D" stroke-width="3" stroke-dasharray="7 7" marker-end="url(#arrow)"/>
+    <path d="M808 244V296" stroke="#6E88D8" stroke-width="3" stroke-dasharray="7 7" marker-end="url(#arrow)"/>
+    <text x="472" y="280" text-anchor="middle" fill="#355B53" font-size="13" font-weight="700">chunking</text>
+    <text x="640" y="280" text-anchor="middle" fill="#71511E" font-size="13" font-weight="700">top-k</text>
+    <text x="808" y="280" text-anchor="middle" fill="#41537E" font-size="13" font-weight="700">LLM params</text>
+
+    <path d="M1053 306C1053 250 985 214 900 204" stroke="#52606D" stroke-width="4" stroke-dasharray="9 8" fill="none" marker-end="url(#arrow-dark)"/>
+    <rect x="960" y="224" width="164" height="34" rx="17" fill="#FFFFFF" stroke="#9AA6B2" stroke-width="1.5"/>
+    <text x="1042" y="246" text-anchor="middle" fill="#1F2933" font-size="14" font-weight="760">fitness feedback</text>
+
+    <rect x="172" y="484" width="936" height="66" rx="16" fill="#FAFBFC" stroke="#D8DEE8"/>
+    <text x="208" y="524" fill="#394B59" font-size="16" font-weight="700">Individual genotype:</text>
+    <text x="374" y="524" fill="#52606D" font-size="15">[chunk_size, chunk_overlap, top_k, temperature, model_name]</text>
+    <text x="832" y="524" fill="#52606D" font-size="15">→ one complete RAG configuration</text>
+  </g>
+</svg>
