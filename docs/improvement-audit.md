@@ -50,3 +50,24 @@ The repository already has a clean public package layout, curated figures, and a
 
 The upgrade should proceed in thematic commits: portfolio framing, correctness fixes, tests/CI, tooling, and final presentation cleanup. Behavioral changes must include tests and documentation updates.
 
+## Completion Notes
+
+Implemented on `main` in thematic commits:
+
+- Portfolio framing: added `DESIGN.md`, `RESULTS.md`, ADRs, roadmap, changelog, and repository metadata guidance.
+- Runtime correctness: moved inference/evaluation/runtime constants into `configs/default.yaml`, added config validation, deterministic seeding, context-window sizing, length-mismatch checks, metric validation, NaN policy, retries, and failed-candidate policy.
+- Search and indexing: added fitness archive persistence, configurable early stopping, PDF-oriented recursive splitting, index resume behavior, and `--force` rebuild support.
+- Test coverage: expanded unit tests for config validation, genotype contracts, mutation bounds, context sizing, metric policies, evaluation length checks, schema constants, and index skip behavior.
+- Tooling: added Ruff, coverage, pre-commit, Makefile targets, and CI installation via `.[test]`.
+
+Local validation completed:
+
+```bash
+ruff check src tests
+ruff format --check src tests
+python -m compileall src
+python -m unittest discover -s tests
+git diff --check
+```
+
+`pytest` is enforced in CI through `python -m pip install -e .[test]`. The local machine currently exposes Python 3.14 rather than the repository's documented Python 3.12 environment, so the local no-model test run was verified with `unittest` while CI remains the authoritative pytest gate.
