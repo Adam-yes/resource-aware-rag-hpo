@@ -1,35 +1,88 @@
-# Resource-Aware RAG HPO
+<p align="center">
+  <img src="docs/assets/repository-header.svg" alt="Resource-Aware RAG HPO" width="100%">
+</p>
 
-Evolutionary hyperparameter optimization for resource-aware Naive-RAG pipelines in technical manufacturing knowledge access.
+<p align="center">
+  <a href="https://github.com/Adam-yes/resource-aware-rag-hpo/actions/workflows/ci.yml"><img alt="CI" src="https://img.shields.io/github/actions/workflow/status/Adam-yes/resource-aware-rag-hpo/ci.yml?branch=main&label=CI&style=flat-square"></a>
+  <img alt="Python" src="https://img.shields.io/badge/python-3.12-2F6BFF?style=flat-square">
+  <img alt="License" src="https://img.shields.io/github/license/Adam-yes/resource-aware-rag-hpo?style=flat-square">
+  <img alt="Ollama" src="https://img.shields.io/badge/Ollama-local%20LLMs-1F2933?style=flat-square">
+  <img alt="Status" src="https://img.shields.io/badge/paper-under%20review-E0A13D?style=flat-square">
+</p>
 
-This repository accompanies the under-review manuscript **"Evolutionary Hyperparameter Optimization of Resource-Aware Naive-RAG Pipelines for Technical Knowledge Access in Manufacturing"**. It provides a curated, reproducible implementation for configuring local open-weight RAG systems under quality and latency constraints.
+<p align="center">
+  <b>Evolutionary hyperparameter optimization for resource-aware Naive-RAG pipelines in technical manufacturing knowledge access.</b>
+</p>
 
-## Executive Summary
+<p align="center">
+  <a href="#why-it-matters">Why it matters</a> |
+  <a href="#results-at-a-glance">Results</a> |
+  <a href="#quick-start">Quick start</a> |
+  <a href="#reproduce-the-study">Reproduce</a> |
+  <a href="docs/methodology.md">Methodology</a>
+</p>
 
-Manufacturing teams depend on technical documentation for maintenance, troubleshooting, process support, and operator assistance. RAG systems can make that knowledge accessible through natural language, but their performance depends on interacting choices across retrieval, chunking, model selection, and decoding.
+---
 
-This project treats RAG configuration as an engineering optimization problem. A genetic algorithm searches the mixed hyperparameter space and evaluates each candidate end to end using factual correctness.
+## Why It Matters
 
-Key findings from the study:
+Manufacturing teams rely on technical documentation for maintenance, troubleshooting, process support, and operator assistance. Retrieval-augmented generation can make that knowledge accessible through natural language, but real-world quality depends on interacting choices across retrieval, chunking, model selection, and decoding.
 
-- Average fitness increased by approximately **80%** over the initial random population.
-- The evolutionary search evaluated **152 unique configurations**.
-- This corresponds to **more than 99% fewer evaluations** than exhaustive grid search over the defined space.
-- Compact local models achieved **86% of the maximum observed quality** while requiring only **7% of the inference time** of the best-performing configuration.
+This repository turns RAG configuration into an engineering optimization problem: a genetic algorithm searches the mixed hyperparameter space and evaluates each candidate end to end using factual correctness.
 
-## Architecture
+> This repository accompanies the under-review manuscript **"Evolutionary Hyperparameter Optimization of Resource-Aware Naive-RAG Pipelines for Technical Knowledge Access in Manufacturing"**.
 
-![RAG optimization workflow](results/figures/Hyperparameter_Optimierung_Methode.png)
+## Results At A Glance
+
+<table>
+  <tr>
+    <td align="center"><b>~80%</b><br><sub>average fitness increase over the initial random population</sub></td>
+    <td align="center"><b>152</b><br><sub>unique configurations evaluated by evolutionary search</sub></td>
+    <td align="center"><b>&gt;99%</b><br><sub>fewer evaluations than exhaustive grid search</sub></td>
+    <td align="center"><b>86% quality</b><br><sub>from compact models at 7% of best-configuration inference time</sub></td>
+  </tr>
+</table>
+
+## Visual Evidence
+
+<table>
+  <tr>
+    <td width="50%">
+      <img src="results/figures/Konvergenz_Max_Avg.png" alt="Optimization convergence">
+      <br><sub><b>Optimization convergence.</b> Average and maximum fitness improve over generations.</sub>
+    </td>
+    <td width="50%">
+      <img src="results/figures/max_fit_vs_latency.png" alt="Quality latency tradeoff">
+      <br><sub><b>Quality-latency tradeoff.</b> Compact local models can be operationally attractive.</sub>
+    </td>
+  </tr>
+  <tr>
+    <td width="50%">
+      <img src="results/figures/Feature_Importance_Random_Forest.png" alt="Feature importance">
+      <br><sub><b>Feature importance.</b> Retrieval depth, model choice, and chunk size drive performance.</sub>
+    </td>
+    <td width="50%">
+      <img src="results/figures/heatmap_f1_temp_chunk_top.png" alt="Hyperparameter interaction heatmap">
+      <br><sub><b>Parameter interactions.</b> Isolated one-factor tuning misses important behavior.</sub>
+    </td>
+  </tr>
+</table>
+
+## System Architecture
+
+<p align="center">
+  <img src="results/figures/Hyperparameter_Optimierung_Methode.png" alt="RAG optimization workflow" width="90%">
+</p>
 
 The workflow combines:
 
-- local Ollama models for generation, judging, and embeddings;
-- Chroma vector stores for retrieval;
-- Ragas factual correctness for automated evaluation;
-- DEAP-based evolutionary search with elitism and early stopping;
-- analysis notebooks for quality, latency, search convergence, and parameter importance.
+- **Local inference:** Ollama models for generation, judging, and embeddings.
+- **Retrieval:** Chroma vector stores over licensed technical documents.
+- **Evaluation:** Ragas factual correctness as the automated fitness signal.
+- **Search:** DEAP-based genetic optimization with elitism and early stopping.
+- **Analysis:** notebooks for convergence, latency, parameter importance, and model clusters.
 
-## Repository Layout
+## Repository Map
 
 ```text
 configs/              Central runtime configuration
@@ -41,7 +94,7 @@ src/evo_rag_hpo/      Reusable Python package
 tests/                Unit and import tests
 ```
 
-Legacy working folders such as `Paper-Plotts/`, `BackUp/`, `icme/`, and submission artifacts are intentionally excluded from public Git tracking.
+Legacy working folders, submission files, raw manuals, local vector stores, and full experiment logs are intentionally excluded from public Git tracking.
 
 ## Quick Start
 
@@ -59,52 +112,41 @@ ollama pull embeddinggemma:300m
 ollama pull qwen3-coder:30b
 ```
 
-Build vector stores from licensed local documents:
+Run the workflow:
 
 ```bash
 python -m evo_rag_hpo.index --config configs/default.yaml
-```
-
-Run the optimization:
-
-```bash
 python -m evo_rag_hpo.optimize --config configs/default.yaml
-```
-
-Evaluate a single genotype:
-
-```bash
 python -m evo_rag_hpo.evaluate 1 2 6 0 3 --config configs/default.yaml
 ```
 
-## Reproduction Levels
+## Reproduce The Study
 
-**Smoke test:** run the unit tests and import checks without local LLM inference.
+| Level | Goal | Command or artifact |
+| --- | --- | --- |
+| Smoke test | Validate package imports and lightweight contracts | `python -m compileall src && python -m unittest discover -s tests` |
+| Sample analysis | Inspect public samples and selected figures | `results/samples/`, `results/figures/` |
+| Full artifact | Re-run the complete optimization loop | Requires licensed source documents, evaluation set, Ollama, configured models, and full CSV artifacts |
+
+Full experimental artifacts are intended for Zenodo or GitHub Release publication after paper clearance.
+
+## Public Interfaces
 
 ```bash
-python -m compileall src
-pytest
+python -m evo_rag_hpo.index      # build Chroma vector stores
+python -m evo_rag_hpo.optimize   # run evolutionary optimization
+python -m evo_rag_hpo.evaluate   # evaluate a single genotype
 ```
 
-**Sample analysis:** inspect the lightweight samples in `results/samples/` and selected figures in `results/figures/`.
+The central runtime configuration is [configs/default.yaml](configs/default.yaml).
 
-**Full artifact reproduction:** requires licensed technical documents, the evaluation set, Ollama, the configured local models, and the full experimental CSV artifacts. The full artifacts will be released through Zenodo or a GitHub Release after paper clearance.
+## Data And Model Policy
 
-## Data Availability
+This repository does **not** redistribute third-party technical manuals, model weights, local vector databases, or large experiment logs.
 
-This public repository intentionally does not redistribute third-party technical manuals or large experimental logs. The documented strategy is:
-
-- keep code, configuration, selected figures, and small samples in GitHub;
-- release large CSV artifacts and data descriptors through Zenodo or a GitHub Release after review clearance;
-- require users to verify licenses for any source documents they process locally.
-
-See [docs/data-availability.md](docs/data-availability.md).
-
-## Model Attribution
-
-The experiments use local open-weight models served through Ollama. Model weights are not distributed in this repository and remain governed by their respective upstream licenses. Users must verify model licenses before operational use.
-
-See [docs/model-attribution.md](docs/model-attribution.md).
+- Data availability: [docs/data-availability.md](docs/data-availability.md)
+- Model attribution: [docs/model-attribution.md](docs/model-attribution.md)
+- Reproduction guide: [docs/reproduction.md](docs/reproduction.md)
 
 ## Citation
 
@@ -113,4 +155,3 @@ Citation information will be added after publication. Until then, cite this repo
 ## License
 
 Code and documentation are released under the Apache License 2.0. Data and model weights are subject to separate upstream licenses and availability constraints.
-
