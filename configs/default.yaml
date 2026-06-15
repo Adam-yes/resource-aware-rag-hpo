@@ -4,6 +4,7 @@ paths:
   evaluation_dataset: data/evaluation/evaluation_testset_50_short_query_length.csv
   hpo_history: results/experiments/hpo_history.csv
   computation_log: results/experiments/evolution_computation_log.csv
+  fitness_archive: results/experiments/fitness_archive.json
 
 models:
   embedding: embeddinggemma:300m
@@ -19,6 +20,33 @@ optimization:
   random_seed: 42
   tournament_size: 3
   early_stopping_min_improvement: 0.05
+  early_stopping_patience: 2
+  early_stopping_metric: max
+
+inference:
+  prompt_token_headroom: 1024
+  answer_token_budget: 1024
+  min_num_ctx: 5120
+  max_num_ctx: 16384
+  num_predict: 1024
+  llm_keep_alive: 15m
+  embedding_keep_alive: 15m
+
+evaluation:
+  timeout: 720
+  max_retries: 2
+  max_wait: 30
+  max_workers: 8
+  nan_policy: zero
+  failed_candidate_fitness: 0.0
+  failure_retries: 1
+
+indexing:
+  batch_size: 5000
+  skip_existing: true
+
+logging:
+  level: INFO
 
 search_space:
   chunk_size: [128, 256, 384, 512, 640, 768, 896, 1024]
@@ -47,4 +75,3 @@ search_space:
     - qwen3-coder:30b
     - gpt-oss:20b
     - qwen3-vl:30b-a3b-instruct
-

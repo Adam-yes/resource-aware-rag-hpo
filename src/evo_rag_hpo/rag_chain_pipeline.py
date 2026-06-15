@@ -6,9 +6,10 @@ from typing import Any
 
 from .config import resolve_project_path
 from .logger import load_column_as_list
+from .runtime import calculate_num_ctx
 
 
-async def run_async_rag_chain(config: dict[str, Any], run_config: dict[str, Any]) -> list[dict[str, Any]]:
+async def run_async_rag_chain(params: dict[str, Any], config: dict[str, Any]) -> list[dict[str, Any]]:
     """Run a configured RAG chain for every question in the evaluation set."""
 
     from langchain_chroma import Chroma
@@ -16,15 +17,15 @@ async def run_async_rag_chain(config: dict[str, Any], run_config: dict[str, Any]
     from langchain_core.runnables import RunnableLambda, RunnableParallel, RunnablePassthrough
     from langchain_ollama import ChatOllama, OllamaEmbeddings
 
-    paths = run_config["paths"]
-    models = run_config["models"]
+    paths = config["paths"]
+    models = config["models"]
     questions = load_column_as_list(str(resolve_project_path(paths["evaluation_dataset"])), "user_input")
 
-    embeddings = OllamaEmbeddings(model=models["embedding"], keep_alive=20)
-    top_k = config["top_k"]
+    embeddings = OllamaEmbeddings(model=models["embedding"], keep_alive=config["inference"]["embedding_keep_alive"])
+    top_k = params["top_k"]
 
     if top_k > 0:
-        collection_name = f"chroma_{config['chunk_size']}_{config['chunk_overlap']}"
+        collection_name = f"chroma_{params['chunk_size']}_{params['chunk_overlap']}"
         vectorstore = Chroma(
             collection_name=collection_name,
             persist_directory=str(resolve_project_path(paths["persist_directory"])),
@@ -48,11 +49,12 @@ async def run_async_rag_chain(config: dict[str, Any], run_config: dict[str, Any]
     )
 
     llm = ChatOllama(
-        model=config["model_name"],
-        temperature=config["temperature"],
-        num_predict=1024,
-        num_ctx=5120,
-        seed=run_config["optimization"]["random_seed"],
+        model=params["model_name"],
+        temperature=params["temperature"],
+        num_predict=config["inference"]["num_predict"],
+        num_ctx=calculate_num_ctx(params, config),
+        keep_alive=config["inference"]["llm_keep_alive"],
+        seed=config["optimization"]["random_seed"],
     )
 
     def format_docs(docs):
@@ -61,4 +63,3 @@ async def run_async_rag_chain(config: dict[str, Any], run_config: dict[str, Any]
     entry_point = RunnableParallel(context=retriever | format_docs, question=RunnablePassthrough())
     rag_chain = entry_point.assign(answer=prompt | llm)
     return await rag_chain.abatch(questions)
-
