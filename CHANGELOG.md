@@ -8,7 +8,7 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 
 ### Reproduction fidelity
 
-- Restored the computational path to a faithful 1:1 reproduction of the manuscript: Markdown
+- Pinned the computational path to the manuscript's published behavior: Markdown
   chunk splitter, verbatim prompt template, fixed `num_ctx = 5120` for generation and judging,
   average-fitness (Delta-mu) early stopping that reproduces the six published generations, no
   fitness cache (repeated genomes are re-evaluated), and NaN-skipping fitness aggregation.
@@ -26,4 +26,7 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 ### Changed
 
 - Repository positioning now emphasizes resource-aware engineering trade-offs for quality, latency, and local compute constraints.
+- Refreshed README and SVG assets: tightened copy, redrew the architecture diagram to remove
+  arrow/label overlaps, and rebuilt the optimization-signal chart from the published convergence
+  data with a subtle grid.
 

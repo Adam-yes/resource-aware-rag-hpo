@@ -1,15 +1,13 @@
 # Engineering Decisions and Reproduction-Fidelity Audit
 
-This document is intentionally candid. The repository has one prime directive: it must enable a
-**faithful 1:1 reproduction** of the accompanying manuscript. Every engineering decision is made
-in service of that goal first, and presentation second.
+The repository must reproduce the accompanying manuscript's published numbers, so every
+engineering decision is made in service of that goal first and presentation second.
 
-A useful distinction runs through this audit: the difference between a *faithful research
-reproduction* and a *production refactor*. Both are legitimate, but they optimize for different
-things. A reproduction must preserve the exact computational behavior that produced the published
-numbers. A production refactor is free to change behavior to improve robustness or efficiency.
-Conflating the two is a common and costly mistake - a change that looks like a bug fix can
-silently invalidate a result. This repository chooses fidelity, and documents where that choice
+A useful distinction runs through this audit: a *research reproduction* versus a *production
+refactor*. A reproduction must preserve the exact computational behavior that produced the
+published numbers; a production refactor is free to change behavior to improve robustness or
+efficiency. Conflating the two is a costly mistake — a change that looks like a bug fix can
+silently invalidate a result. This repository chooses fidelity and documents where that choice
 overrides otherwise reasonable "improvements".
 
 ## What The Engineering Layer Keeps

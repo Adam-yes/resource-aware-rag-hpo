@@ -1,8 +1,13 @@
 <svg width="1280" height="420" viewBox="0 0 1280 420" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc">
   <title id="title">Resource-Aware RAG HPO repository header</title>
   <desc id="desc">A workflow graphic for evolutionary optimization of local RAG pipelines.</desc>
+  <defs>
+    <marker id="fb" markerWidth="10" markerHeight="10" refX="7.5" refY="5" orient="auto" markerUnits="strokeWidth">
+      <path d="M1 1.5L7.5 5L1 8.5Z" fill="#52606D"/>
+    </marker>
+  </defs>
   <rect width="1280" height="420" fill="#F7F8FA"/>
-  <rect x="48" y="46" width="1184" height="328" rx="22" fill="#FFFFFF" stroke="#D8DEE8" stroke-width="2"/>
+  <rect x="48" y="46" width="1184" height="328" rx="22" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="1.5"/>
   <path d="M91 122C91 95.49 112.49 74 139 74H1141C1167.51 74 1189 95.49 1189 122V181H91V122Z" fill="#16202A"/>
   <text x="126" y="126" fill="#FFFFFF" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="42" font-weight="750">Resource-Aware RAG HPO</text>
   <text x="127" y="161" fill="#B8C4D6" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="19">Evolutionary hyperparameter optimization for local Naive-RAG pipelines in manufacturing knowledge access</text>
@@ -33,9 +38,9 @@
     <text x="1046" y="261" text-anchor="middle" fill="#1F2933" font-size="18" font-weight="700">Evaluate</text>
     <text x="1046" y="284" text-anchor="middle" fill="#52606D" font-size="14">factual correctness</text>
 
-    <path d="M1046 226C1046 207 1028 202 998 201C947 198 920 188 881 183C814 174 746 186 713 217" stroke="#52606D" stroke-width="4" stroke-dasharray="9 8" fill="none"/>
-    <rect x="802" y="188" width="176" height="34" rx="17" fill="#FFFFFF" stroke="#9AA6B2" stroke-width="1.5"/>
-    <text x="890" y="210" text-anchor="middle" fill="#1F2933" font-size="14" font-weight="760">fitness feedback</text>
+    <path d="M1046 230C1046 200 1008 192 906 192C842 192 800 200 768 228" stroke="#52606D" stroke-width="3" stroke-dasharray="8 7" fill="none" marker-end="url(#fb)"/>
+    <rect x="804" y="186" width="172" height="32" rx="16" fill="#FFFFFF" stroke="#9AA6B2" stroke-width="1.25"/>
+    <text x="890" y="207" text-anchor="middle" fill="#1F2933" font-size="14" font-weight="700">fitness feedback</text>
 
     <rect x="122" y="326" width="126" height="34" rx="17" fill="#16202A"/>
     <text x="185" y="348" text-anchor="middle" fill="#FFFFFF" font-size="14" font-weight="700">80% fitness gain</text>

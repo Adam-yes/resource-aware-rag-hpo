@@ -18,14 +18,13 @@ A genetic algorithm is a pragmatic middle ground:
 
 ## Reproduction Fidelity As A Design Constraint
 
-This repository is a research artifact before it is a product, so its prime directive is a
-faithful 1:1 reproduction of the manuscript. That constraint actively shapes the design: the
-chunking splitter, the prompt, a fixed context window, the no-cache evaluation loop, and the
-average-fitness (Delta-mu) early-stopping rule are all pinned to the published behavior, even
-where a production system might reasonably choose differently. Engineering additions (packaging,
-central configuration, validation, tests, CI) are kept only because they preserve behavior. The
-explicit list of decisions - including changes that were reverted to protect reproduction - is in
-[improvement-audit.md](improvement-audit.md).
+This is a research artifact, so it reproduces the manuscript's computational behavior before it
+optimizes for anything else. The chunking splitter, the prompt, the fixed context window, the
+no-cache evaluation loop, and the average-fitness (Delta-mu) early-stopping rule are all pinned to
+the published behavior, even where a production system might choose differently. Engineering
+additions (packaging, central configuration, validation, tests, CI) are kept only because they
+preserve behavior. The decisions — including changes reverted to protect reproduction — are listed
+in [improvement-audit.md](improvement-audit.md).
 
 ## Why Local Ollama Models
 
