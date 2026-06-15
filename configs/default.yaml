@@ -1,33 +1,34 @@
+# Default configuration for the resource-aware RAG hyperparameter search.
+# The values below reproduce the original published experiment. Settings taken directly from
+# the paper / experiment data are noted; operator-level GA probabilities are exposed here so
+# they are explicit and auditable rather than hidden in code.
+
 paths:
   raw_documents: data/raw
   persist_directory: data/chroma_db
   evaluation_dataset: data/evaluation/evaluation_testset_50_short_query_length.csv
   hpo_history: results/experiments/hpo_history.csv
   computation_log: results/experiments/evolution_computation_log.csv
-  fitness_archive: results/experiments/fitness_archive.json
 
 models:
-  embedding: embeddinggemma:300m
-  judge: qwen3-coder:30b
+  embedding: embeddinggemma:300m   # fixed across all collections for comparability
+  judge: qwen3-coder:30b           # LLM-as-a-judge, temperature 0 for deterministic verdicts
 
 optimization:
-  population_size: 42
-  max_generations: 7
+  population_size: 42              # verified against hpo_history.csv (42 individuals/generation)
+  max_generations: 7              # upper bound; the run early-stops at generation 5 (six gens)
   hall_of_fame_size: 1
-  crossover_probability: 0.7
-  mutation_probability: 0.4
+  crossover_probability: 0.7       # GA operator setting (reference-implementation convention)
+  mutation_probability: 0.4        # GA operator setting (reference-implementation convention)
   individual_mutation_probability: 0.2
   random_seed: 42
   tournament_size: 3
-  early_stopping_min_improvement: 0.05
-  early_stopping_patience: 2
-  early_stopping_metric: max
+  early_stopping_min_improvement: 0.05   # stop when relative avg-fitness gain < 5% (paper's Delta-mu)
+  early_stopping_patience: 1             # 1 = stop on the first sub-threshold generation (paper behavior)
+  early_stopping_metric: avg             # the paper's stopping criterion monitors average fitness
 
 inference:
-  prompt_token_headroom: 1024
-  answer_token_budget: 1024
-  min_num_ctx: 5120
-  max_num_ctx: 16384
+  num_ctx: 5120                    # fixed context window for generation AND judging
   num_predict: 1024
   llm_keep_alive: 15m
   embedding_keep_alive: 15m
@@ -37,9 +38,7 @@ evaluation:
   max_retries: 2
   max_wait: 30
   max_workers: 8
-  nan_policy: zero
-  failed_candidate_fitness: 0.0
-  failure_retries: 1
+  nan_policy: drop                 # skip invalid (NaN) scores, matching pandas' default mean
 
 indexing:
   batch_size: 5000

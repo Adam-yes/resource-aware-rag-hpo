@@ -16,11 +16,23 @@ The phenotype is evaluated by executing the complete RAG pipeline over a fixed e
 
 The genetic algorithm uses:
 
-- tournament selection;
-- uniform crossover;
-- mixed mutation for ordinal and categorical dimensions;
-- elitism;
-- early stopping when average-fitness improvement falls below the configured threshold.
+- a population of 42 individuals (verified against `hpo_history.csv`);
+- tournament selection, uniform crossover, and elitism (a hall-of-fame elite carried forward);
+- structure-aware mutation: single-step nudges for ordinal genes, random re-selection for the
+  categorical model gene;
+- early stopping when the relative improvement in *average* population fitness between two
+  consecutive generations (Delta-mu) falls below 5%.
+
+The published run terminates after six generations (0-5), when Delta-mu first reaches 4.57%.
+
+## Inference And Evaluation
+
+Generation and judging both run on local Ollama models with a **fixed** context window
+(`num_ctx = 5120`), `num_predict = 1024`, and pinned seeds. The judge is `qwen3-coder:30b` at
+temperature 0. Fitness is the mean RAGAS FactualCorrectness (F1) over the 50-question benchmark:
+each answer and reference is decomposed into atomic facts, and the per-question F1 is the harmonic
+mean of fact precision and recall. Invalid (NaN) scores are skipped from the mean (`nan_policy:
+drop`), matching the original aggregation.
 
 The implementation writes two linked logs:
 

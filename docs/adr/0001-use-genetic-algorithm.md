@@ -6,7 +6,7 @@ The search space combines ordinal parameters, categorical model choices, and exp
 
 ## Decision
 
-Use a DEAP-based genetic algorithm with elitism, mutation, crossover, caching, and configurable early stopping.
+Use a DEAP-based genetic algorithm with elitism, structure-aware mutation, uniform crossover, and average-fitness (Delta-mu) early stopping. No fitness cache is used: repeated genomes are re-evaluated, matching the original experiment's evaluation counts.
 
 ## Consequences
 

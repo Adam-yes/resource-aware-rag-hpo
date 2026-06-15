@@ -35,6 +35,8 @@ Manufacturing teams rely on technical documentation for maintenance, troubleshoo
 
 This repository turns RAG configuration into an engineering optimization problem: a genetic algorithm searches the mixed hyperparameter space and evaluates each candidate end to end using factual correctness.
 
+The repository is built to enable a **faithful 1:1 reproduction** of the manuscript. The computational path - splitter, prompt, fixed context window, fitness aggregation, and the average-fitness early-stopping rule - is pinned to the published behavior; engineering additions (packaging, config, validation, tests, CI) are deliberately behavior-preserving. See [docs/improvement-audit.md](docs/improvement-audit.md) for the explicit fidelity decisions.
+
 > This repository accompanies the under-review manuscript **"Evolutionary Hyperparameter Optimization of Resource-Aware Naive-RAG Pipelines for Technical Knowledge Access in Manufacturing"**.
 
 For the architectural reasoning behind the project, read [docs/DESIGN.md](docs/DESIGN.md). For the durable results summary, read [docs/RESULTS.md](docs/RESULTS.md). For decision records, see [docs/adr/](docs/adr/).
@@ -134,7 +136,7 @@ python -m evo_rag_hpo.evaluate   # evaluate a single genotype
 
 The central runtime configuration is [configs/default.yaml](configs/default.yaml).
 
-Core runtime behavior is explicit in the YAML file: model choices, search space, context-window limits, keep-alive values, evaluation retry policy, failed-candidate fitness, NaN handling, early-stopping patience, and output paths.
+Core runtime behavior is explicit in the YAML file: model choices, the search space, the fixed context window (`num_ctx`), keep-alive values, NaN handling, the average-fitness early-stopping criterion, and output paths. The defaults reproduce the published experiment exactly.
 
 ## Data And Model Policy
 

@@ -1,4 +1,17 @@
-"""Configuration helpers for the resource-aware RAG HPO workflow."""
+"""Configuration model, validation, and genotype decoding for the RAG HPO workflow.
+
+This module is the single source of truth for the experiment's configuration. It exposes:
+
+* :data:`DEFAULT_CONFIG` - the built-in defaults reproducing the published experiment, used
+  whenever no YAML file is supplied (and as the base that a YAML file overrides).
+* :func:`load_config` - load and validate a YAML config, deep-merged over the defaults.
+* :func:`decode_individual` - map a genetic genotype (indices) to concrete hyperparameters.
+* path/limit/hash helpers shared across the pipeline.
+
+Keeping the search space and all tunables here - rather than scattered as literals across
+modules - is what makes the study auditable: every number that influences the result is in one
+place and is covered by :func:`validate_config`.
+"""
 
 from __future__ import annotations
 
@@ -9,6 +22,8 @@ from typing import Any
 
 DEFAULT_CONFIG_PATH = Path(__file__).resolve().parents[2] / "configs" / "default.yaml"
 
+# Built-in defaults. These reproduce the original published experiment exactly; a YAML file (see
+# configs/default.yaml) may override any leaf value via load_config's deep merge.
 DEFAULT_CONFIG: dict[str, Any] = {
     "paths": {
         "raw_documents": "data/raw",
@@ -16,7 +31,6 @@ DEFAULT_CONFIG: dict[str, Any] = {
         "evaluation_dataset": "data/evaluation/evaluation_testset_50_short_query_length.csv",
         "hpo_history": "results/experiments/hpo_history.csv",
         "computation_log": "results/experiments/evolution_computation_log.csv",
-        "fitness_archive": "results/experiments/fitness_archive.json",
     },
     "models": {
         "embedding": "embeddinggemma:300m",
@@ -32,14 +46,12 @@ DEFAULT_CONFIG: dict[str, Any] = {
         "random_seed": 42,
         "tournament_size": 3,
         "early_stopping_min_improvement": 0.05,
-        "early_stopping_patience": 2,
-        "early_stopping_metric": "max",
+        "early_stopping_patience": 1,
+        "early_stopping_metric": "avg",
     },
     "inference": {
-        "prompt_token_headroom": 1024,
-        "answer_token_budget": 1024,
-        "min_num_ctx": 5120,
-        "max_num_ctx": 16384,
+        # Fixed context window for both generation and judging, matching the original study.
+        "num_ctx": 5120,
         "num_predict": 1024,
         "llm_keep_alive": "15m",
         "embedding_keep_alive": "15m",
@@ -49,9 +61,8 @@ DEFAULT_CONFIG: dict[str, Any] = {
         "max_retries": 2,
         "max_wait": 30,
         "max_workers": 8,
-        "nan_policy": "zero",
-        "failed_candidate_fitness": 0.0,
-        "failure_retries": 1,
+        # "drop" reproduces pandas' NaN-skipping mean used in the original fitness aggregation.
+        "nan_policy": "drop",
     },
     "indexing": {
         "batch_size": 5000,
@@ -93,10 +104,17 @@ DEFAULT_CONFIG: dict[str, Any] = {
 
 
 def load_config(path: str | Path | None = None) -> dict[str, Any]:
-    """Load the YAML config, falling back to the built-in defaults.
+    """Load the YAML config deep-merged over the defaults, validating the result.
 
-    Heavy execution paths depend on PyYAML through the environment file, but tests and
-    simple imports should still work without it.
+    Heavy execution paths depend on PyYAML through the environment file, but tests and simple
+    imports work without it: when no YAML file exists, the validated built-in defaults are
+    returned and PyYAML is never imported.
+
+    Args:
+        path: Optional path to a YAML config. Defaults to ``configs/default.yaml``.
+
+    Returns:
+        A fully validated configuration dictionary.
     """
 
     config_path = Path(path) if path else DEFAULT_CONFIG_PATH
@@ -120,6 +138,8 @@ def load_config(path: str | Path | None = None) -> dict[str, Any]:
 
 
 def _deep_update(target: dict[str, Any], updates: dict[str, Any]) -> dict[str, Any]:
+    """Recursively merge ``updates`` into ``target`` (nested dicts merge; leaves overwrite)."""
+
     for key, value in updates.items():
         if isinstance(value, dict) and isinstance(target.get(key), dict):
             _deep_update(target[key], value)
@@ -129,7 +149,11 @@ def _deep_update(target: dict[str, Any], updates: dict[str, Any]) -> dict[str, A
 
 
 def validate_config(config: dict[str, Any]) -> None:
-    """Validate the public config shape with clear, early errors."""
+    """Validate the configuration shape and ranges, raising early on misconfiguration.
+
+    Fails fast with a precise message rather than letting an invalid value surface as an obscure
+    error hours into a search.
+    """
 
     required_sections = ["paths", "models", "optimization", "search_space", "inference", "evaluation", "indexing"]
     for section in required_sections:
@@ -156,21 +180,25 @@ def validate_config(config: dict[str, Any]) -> None:
         raise ValueError("optimization.early_stopping_patience must be at least 1.")
 
     inference = config["inference"]
-    for key in ["prompt_token_headroom", "answer_token_budget", "min_num_ctx", "max_num_ctx", "num_predict"]:
+    for key in ["num_ctx", "num_predict"]:
         if int(inference[key]) <= 0:
             raise ValueError(f"inference.{key} must be positive.")
-    if int(inference["max_num_ctx"]) < int(inference["min_num_ctx"]):
-        raise ValueError("inference.max_num_ctx must be >= inference.min_num_ctx.")
 
     evaluation = config["evaluation"]
     if evaluation["nan_policy"] not in {"zero", "drop", "raise"}:
         raise ValueError("evaluation.nan_policy must be one of: zero, drop, raise.")
-    if int(evaluation["failure_retries"]) < 0:
-        raise ValueError("evaluation.failure_retries must be non-negative.")
 
 
 def decode_individual(individual: list[int] | tuple[int, ...], config: dict[str, Any] | None = None) -> dict[str, Any]:
-    """Translate a genotype into concrete RAG hyperparameters."""
+    """Translate a genotype (list of indices) into concrete RAG hyperparameters (phenotype).
+
+    The genome order is fixed: ``[chunk_size, chunk_overlap, top_k, temperature, model_name]``.
+    Each gene is an index into the corresponding ``search_space`` list.
+
+    Raises:
+        ValueError: If the genome length does not match the number of search dimensions.
+        IndexError: If any gene is out of bounds for its dimension.
+    """
 
     cfg = config or load_config()
     search_space = cfg["search_space"]
@@ -190,7 +218,7 @@ def decode_individual(individual: list[int] | tuple[int, ...], config: dict[str,
 
 
 def search_space_limits(config: dict[str, Any] | None = None) -> list[int]:
-    """Return the maximum valid gene index for each search dimension."""
+    """Return the maximum valid gene index for each search dimension (inclusive upper bounds)."""
 
     cfg = config or load_config()
     search_space = cfg["search_space"]
@@ -204,13 +232,13 @@ def search_space_limits(config: dict[str, Any] | None = None) -> list[int]:
 
 
 def genotype_hash(individual: list[int] | tuple[int, ...]) -> str:
-    """Create the stable short hash used to join HPO and computation logs."""
+    """Return the stable 8-char hash that joins per-generation and per-question logs."""
 
     return md5(str(list(individual)).encode("utf-8")).hexdigest()[:8]
 
 
 def resolve_project_path(path: str | Path) -> Path:
-    """Resolve repository-relative paths without requiring a specific working directory."""
+    """Resolve a repository-relative path to an absolute one, independent of the working dir."""
 
     candidate = Path(path)
     if candidate.is_absolute():
@@ -219,9 +247,9 @@ def resolve_project_path(path: str | Path) -> Path:
 
 
 def ensure_output_directories(config: dict[str, Any] | None = None) -> None:
-    """Create parent directories for configured outputs."""
+    """Create the parent directories for all configured output artifacts."""
 
     cfg = config or load_config()
-    for key in ("hpo_history", "computation_log", "fitness_archive"):
+    for key in ("hpo_history", "computation_log"):
         resolve_project_path(cfg["paths"][key]).parent.mkdir(parents=True, exist_ok=True)
     resolve_project_path(cfg["paths"]["persist_directory"]).mkdir(parents=True, exist_ok=True)

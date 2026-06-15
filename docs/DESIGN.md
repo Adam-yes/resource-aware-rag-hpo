@@ -13,9 +13,19 @@ The search space mixes ordinal values (`chunk_size`, `top_k`, `temperature`) and
 A genetic algorithm is a pragmatic middle ground:
 
 - it handles mixed discrete/categorical search spaces naturally;
-- it supports simple caching and resume strategies;
 - it exposes understandable trade-offs to stakeholders;
 - it can stop early when marginal improvement no longer justifies compute.
+
+## Reproduction Fidelity As A Design Constraint
+
+This repository is a research artifact before it is a product, so its prime directive is a
+faithful 1:1 reproduction of the manuscript. That constraint actively shapes the design: the
+chunking splitter, the prompt, a fixed context window, the no-cache evaluation loop, and the
+average-fitness (Delta-mu) early-stopping rule are all pinned to the published behavior, even
+where a production system might reasonably choose differently. Engineering additions (packaging,
+central configuration, validation, tests, CI) are kept only because they preserve behavior. The
+explicit list of decisions - including changes that were reverted to protect reproduction - is in
+[improvement-audit.md](improvement-audit.md).
 
 ## Why Local Ollama Models
 
@@ -43,8 +53,12 @@ This repository should make those trade-offs explicit in configuration, logs, an
 
 ## What I Would Do Next
 
-- Add a multi-objective objective that explicitly combines quality, latency, and compute budget.
-- Persist the fitness cache across interrupted runs.
+These are explicitly *forward-looking* directions for a production successor, kept separate from
+the reproduction default so they never silently alter the published results:
+
+- Add a multi-objective fitness that explicitly combines quality, latency, and compute budget.
+- Offer an opt-in, off-by-default fitness cache and candidate-failure policy for long runs, with
+  their effect on the logs documented.
 - Add richer observability for candidate failures, timeouts, and context truncation.
 - Publish full artifacts through Zenodo after paper clearance.
 - Render key notebooks into static documentation pages for review without notebook execution.

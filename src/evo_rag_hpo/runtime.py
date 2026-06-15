@@ -1,4 +1,9 @@
-"""Runtime helpers for context sizing, validation, and deterministic execution."""
+"""Small, dependency-light runtime helpers shared across the optimization modules.
+
+These utilities are deliberately free of heavy imports (LangChain, RAGAS, DEAP) so they can be
+unit-tested and reused without spinning up the full inference stack: logging configuration,
+deterministic seeding, length validation, and metric aggregation.
+"""
 
 from __future__ import annotations
 
@@ -12,7 +17,12 @@ logger = logging.getLogger(__name__)
 
 
 def configure_logging(level: str = "INFO") -> None:
-    """Configure module logging for command-line entrypoints."""
+    """Configure root logging for the command-line entry points.
+
+    Args:
+        level: A logging level name (e.g. ``"INFO"``, ``"DEBUG"``). Unknown names fall back to
+            ``INFO`` so a typo in configuration never silences logging entirely.
+    """
 
     logging.basicConfig(
         level=getattr(logging, level.upper(), logging.INFO),
@@ -21,7 +31,12 @@ def configure_logging(level: str = "INFO") -> None:
 
 
 def set_deterministic_seed(seed: int) -> None:
-    """Seed supported local RNGs from the configured experiment seed."""
+    """Seed the local RNGs used by the genetic algorithm.
+
+    Seeds Python's ``random`` (population init, selection, crossover, mutation) and, when
+    available, NumPy's RNG. LLM inference determinism is governed separately by the per-model
+    ``seed``/``temperature`` settings and the Ollama backend.
+    """
 
     random.seed(seed)
     try:
@@ -32,28 +47,16 @@ def set_deterministic_seed(seed: int) -> None:
         logger.debug("NumPy is not installed; skipped NumPy RNG seeding.")
 
 
-def calculate_num_ctx(params: dict[str, Any], config: dict[str, Any]) -> int:
-    """Estimate and cap the Ollama context window needed for one RAG candidate."""
-
-    inference = config["inference"]
-    retrieved_tokens = int(params["chunk_size"] * params["top_k"])
-    estimated = retrieved_tokens + int(inference["prompt_token_headroom"]) + int(inference["answer_token_budget"])
-    min_ctx = int(inference["min_num_ctx"])
-    max_ctx = int(inference["max_num_ctx"])
-    num_ctx = max(min_ctx, min(estimated, max_ctx))
-
-    if estimated > max_ctx:
-        logger.warning(
-            "Estimated context need %s exceeds configured max_num_ctx=%s for params=%s; using capped context.",
-            estimated,
-            max_ctx,
-            params,
-        )
-    return num_ctx
-
-
 def ensure_equal_lengths(results: list[Any], references: Any) -> None:
-    """Fail fast when generated responses and references do not align."""
+    """Assert that generated results and references align one-to-one.
+
+    Pairing answers with references via ``zip`` would silently truncate to the shorter sequence
+    if their lengths diverged, corrupting every downstream score. Failing fast here turns a
+    subtle data bug into an explicit, debuggable error.
+
+    Raises:
+        ValueError: If the two collections differ in length.
+    """
 
     reference_count = len(references)
     result_count = len(results)
@@ -62,7 +65,25 @@ def ensure_equal_lengths(results: list[Any], references: Any) -> None:
 
 
 def metric_mean(eval_df: Any, nan_policy: str) -> float:
-    """Validate and aggregate the configured factual-correctness metric."""
+    """Aggregate the per-question factual-correctness column into a single fitness scalar.
+
+    Args:
+        eval_df: The RAGAS results frame (or any object exposing ``columns`` and column access).
+        nan_policy: How to treat invalid (NaN) per-question scores:
+
+            * ``"drop"`` - exclude NaNs from the mean. Mirrors ``pandas.Series.mean`` and
+              reproduces the original experiment, where 2 of ~7,600 evaluations were invalid.
+            * ``"zero"`` - replace NaNs with 0 before averaging (penalizes failures).
+            * ``"raise"`` - treat any NaN as a hard error.
+
+    Returns:
+        The mean factual-correctness F1 score across the scorable questions.
+
+    Raises:
+        KeyError: If the expected metric column is missing (a measurement-contract violation).
+        ValueError: If, after applying the policy, there are no scorable values, or if
+            ``nan_policy="raise"`` and a NaN is present.
+    """
 
     if FACTUAL_CORRECTNESS_COLUMN not in eval_df.columns:
         raise KeyError(f"Missing expected Ragas metric column: {FACTUAL_CORRECTNESS_COLUMN}")
@@ -78,9 +99,3 @@ def metric_mean(eval_df: Any, nan_policy: str) -> float:
     if len(series) == 0:
         raise ValueError(f"Metric column {FACTUAL_CORRECTNESS_COLUMN} contains no scorable values.")
     return float(series.mean())
-
-
-def failure_fitness(config: dict[str, Any]) -> tuple[float]:
-    """Return the configured deterministic score for failed candidates."""
-
-    return (float(config["evaluation"]["failed_candidate_fitness"]),)

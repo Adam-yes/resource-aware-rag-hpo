@@ -1,73 +1,67 @@
-# Improvement Audit
+# Engineering Decisions and Reproduction-Fidelity Audit
 
-This audit records the confirmed gaps behind the portfolio upgrade work. It is intentionally candid: the repository should signal technical ownership, not only attractive presentation.
+This document is intentionally candid. The repository has one prime directive: it must enable a
+**faithful 1:1 reproduction** of the accompanying manuscript. Every engineering decision is made
+in service of that goal first, and presentation second.
 
-## Executive Summary
+A useful distinction runs through this audit: the difference between a *faithful research
+reproduction* and a *production refactor*. Both are legitimate, but they optimize for different
+things. A reproduction must preserve the exact computational behavior that produced the published
+numbers. A production refactor is free to change behavior to improve robustness or efficiency.
+Conflating the two is a common and costly mistake - a change that looks like a bug fix can
+silently invalidate a result. This repository chooses fidelity, and documents where that choice
+overrides otherwise reasonable "improvements".
 
-The repository already has a clean public package layout, curated figures, and a strong README surface. The next maturity step is to make the engineering story match the leadership story: explicit trade-offs, documented architecture decisions, stronger measurement validity, better failure handling, and CI that proves more than importability.
+## What The Engineering Layer Keeps
 
-## Leadership And Presentation
+The repository wraps the original research code in a maintainable, reviewable package **without
+changing what it computes**. These additions are behavior-preserving and are kept:
 
-| Severity | Finding | Evidence | Impact |
+- A `src/`-layout installable package (`evo_rag_hpo`) with three CLI entry points.
+- A single source of truth for configuration (`configs/default.yaml` + `DEFAULT_CONFIG`) with
+  explicit validation and clear, early error messages.
+- Lazy imports of the heavy stack (LangChain, RAGAS, DEAP) so the package imports cheaply and is
+  unit-testable without a GPU or local models.
+- Deterministic seeding, an explicit answer/reference length guard, and a metric-column contract
+  check - none of which alter the success-path result, but all of which make failures legible.
+- A test suite (config validation, genotype contracts, mutation bounds, metric policy, logging
+  schema, and an early-stopping reproduction test), Ruff lint/format, and a CI gate that installs
+  the real dependencies and runs `pytest` with coverage.
+- English, didactic comments and docstrings throughout, translated and expanded from the original.
+
+## What Was Reverted To Preserve Fidelity
+
+An earlier refactor introduced several changes that, while defensible as production engineering,
+**alter the computation** and therefore break a 1:1 reproduction. Each was reverted, and the
+faithful behavior is now the default. They remain documented here so the decision is auditable.
+
+| Area | Reverted change | Why it breaks reproduction | Faithful behavior (now default) |
 | --- | --- | --- | --- |
-| Medium | The README leads with the project name and visuals before the reviewer-facing outcome narrative. | `README.md` opening section | Busy managers and staff engineers need the outcome and trade-off story within seconds. |
-| High | There is no senior-level design document explaining the quality/latency/compute trade-off. | `docs/` lacks `DESIGN.md` | The repository undersells the resource-aware thesis and the author's architectural judgment. |
-| Medium | Architecture decisions are implicit in code and paper narrative, not captured as ADRs. | `docs/adr/` absent | Reviewers cannot see why GA, local inference, and FactualCorrectness were chosen. |
-| Medium | Results are visually summarized but not yet documented as a reproducible results narrative. | `docs/RESULTS.md` absent | The headline numbers need a durable source separate from the README. |
-| Low | Repository metadata changes are not documented for repeatable portfolio setup. | no `gh repo edit` guidance | The public About/topics setup depends on manual memory. |
+| Chunking | Recursive character splitter | Changes every chunk boundary, hence all retrieval results | `MarkdownTextSplitter` (as published) |
+| Context window | Dynamic `num_ctx` from `chunk_size * top_k`, judge at 16384 | Varies generation/judging behavior across candidates | Fixed `num_ctx = 5120` for generation and judging |
+| Early stopping | Monitor `max` fitness with patience 2 | Stops on a different generation than the paper | Monitor `avg` (Delta-mu), stop on first < 5% (six generations) |
+| Evaluation count | Global fitness-archive cache | Skips re-evaluation of repeated genomes (203 -> 152) | No cache; repeated genomes re-evaluated, matching the logs |
+| NaN handling | `nan_policy: zero` (penalize failures with 0) | Changes the aggregate fitness when an evaluation is invalid | `nan_policy: drop` (pandas-default skip), matching the run |
+| Prompt | Condensed/re-cased instruction template | Changes model output, hence the F1 scores | Original prompt reproduced verbatim |
 
-## Backend Correctness
+The early-stopping behavior is locked in by an integration test that replays the manuscript's
+average-fitness sequence and asserts the loop terminates after generation 5.
 
-| Severity | Finding | Evidence | Impact |
-| --- | --- | --- | --- |
-| High | Context window is hardcoded to 5120 tokens while the search space allows `1024 * 10` retrieval content before prompt overhead. | `src/evo_rag_hpo/rag_chain_pipeline.py` sets `num_ctx=5120`; `configs/default.yaml` allows `chunk_size=1024`, `top_k=10` | Large candidates may be truncated, corrupting the measured fitness signal. |
-| High | Evaluation silently truncates if RAG result count differs from reference count. | `src/evo_rag_hpo/evaluate.py` builds the dataset with `zip(...)` | Missing generations can shrink the evaluation set and inflate/deflate F1 without visibility. |
-| Medium | Metric-column handling is inconsistent. | `evaluate.py` writes `row_eval.get(...)` but scores with direct `eval_df[...]` | A missing Ragas metric column can fail late or silently write inconsistent values. |
-| Medium | Runtime constants are hardcoded in code. | `num_predict=1024`, `timeout=720`, `max_workers=8`, `keep_alive` values in runtime modules | Reproduction and resource tuning require code edits instead of config changes. |
-| Medium | Failed candidate behavior is not explicit. | `evaluate.py` has no configurable failed-candidate fitness policy | A single timeout can stop a long run or produce inconsistent handling. |
-| Medium | Indexing uses a Markdown splitter after loading PDFs. | `src/evo_rag_hpo/index.py` imports `MarkdownTextSplitter` | PDF-derived text is better served by a generic recursive splitter unless Markdown semantics are intentional. |
-| Medium | Index rebuilds are not idempotent. | `index.py` always creates/adds collections; no `--force` or skip policy | Re-embedding all collections wastes compute and makes resume workflows expensive. |
-| Low | The misspelled compatibility alias remains visible. | `evaluate.py` defines `run_async_aeavluate` | It preserves compatibility but should warn or be deprecated clearly. |
+## Honest Provenance Notes
 
-## Tests, CI, And Tooling
+- **GA operator probabilities** (crossover 0.7, mutation 0.4, per-gene mutation 0.2, tournament
+  size 3) are not separately tabulated in the manuscript. The population size (42) and the
+  stopping criterion are verified against the committed `hpo_history.csv`. The operator
+  probabilities follow the reference GA implementation cited in the paper (Wirsansky,
+  *Hands-On Genetic Algorithms with Python*) and are exposed in configuration so a reproducer can
+  pin or vary them deliberately. They are labeled as configuration choices, not paper claims.
+- **Determinism** is best-effort: seeds are fixed everywhere they can be, but local LLM inference
+  through Ollama is not bit-for-bit reproducible, so exact fitness values may vary slightly while
+  the methodology and aggregate behavior reproduce.
 
-| Severity | Finding | Evidence | Impact |
-| --- | --- | --- | --- |
-| High | CI installs the package with `--no-deps`. | `.github/workflows/ci.yml` | A green badge currently does not prove dependency compatibility. |
-| Medium | Unit tests cover only a small contract surface. | `tests/` currently covers decode/hash/import/log schema/mutation basics | Correctness fixes need regression tests around evaluation, context sizing, config validation, and early stopping. |
-| Medium | No lint/format/coverage enforcement exists. | no Ruff, coverage, pre-commit, or Makefile config | Portfolio reviewers expect visible quality discipline. |
-| Medium | Dependency sources can drift. | `pyproject.toml`, `requirements.txt`, and `environment.yml` are maintained separately | Install paths may diverge unless `pyproject.toml` is declared canonical. |
+## Robustness Extras That Were Deliberately Not Added Back
 
-## Reproducibility And Artifact Policy
-
-| Severity | Finding | Evidence | Impact |
-| --- | --- | --- | --- |
-| Medium | Public reproduction levels are documented, but expected runtime/hardware is incomplete. | `docs/reproduction.md` | Users need a clear distinction between smoke tests, sample analysis, and full local-model runs. |
-| Medium | Full results are intentionally absent, but missing values need explicit TODO markers. | `docs/RESULTS.md` absent | Integrity requires distinguishing confirmed public artifacts from pending full-artifact values. |
-| Low | Notebook outputs dominate repository weight and presentation risk. | `notebooks/` contains large curated notebooks | Stripping/rendering policy should be documented and eventually automated. |
-
-## Implementation Direction
-
-The upgrade should proceed in thematic commits: portfolio framing, correctness fixes, tests/CI, tooling, and final presentation cleanup. Behavioral changes must include tests and documentation updates.
-
-## Completion Notes
-
-Implemented on `main` in thematic commits:
-
-- Portfolio framing: added `DESIGN.md`, `RESULTS.md`, ADRs, roadmap, changelog, and repository metadata guidance.
-- Runtime correctness: moved inference/evaluation/runtime constants into `configs/default.yaml`, added config validation, deterministic seeding, context-window sizing, length-mismatch checks, metric validation, NaN policy, retries, and failed-candidate policy.
-- Search and indexing: added fitness archive persistence, configurable early stopping, PDF-oriented recursive splitting, index resume behavior, and `--force` rebuild support.
-- Test coverage: expanded unit tests for config validation, genotype contracts, mutation bounds, context sizing, metric policies, evaluation length checks, schema constants, and index skip behavior.
-- Tooling: added Ruff, coverage, pre-commit, Makefile targets, and CI installation via `.[test]`.
-
-Local validation completed:
-
-```bash
-ruff check src tests
-ruff format --check src tests
-python -m compileall src
-python -m unittest discover -s tests
-git diff --check
-```
-
-`pytest` is enforced in CI through `python -m pip install -e .[test]`. The local machine currently exposes Python 3.14 rather than the repository's documented Python 3.12 environment, so the local no-model test run was verified with `unittest` while CI remains the authoritative pytest gate.
+Graceful candidate-failure retries and a persistent fitness cache are reasonable for a long
+production run, but they change the logged output and evaluation counts. They are intentionally
+**out of scope** for the reproduction default. If reintroduced, they belong behind explicit,
+off-by-default configuration flags, with their effect on the logs documented.

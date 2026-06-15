@@ -7,6 +7,8 @@ __pycache__/
 .mypy_cache/
 .ruff_cache/
 .coverage
+.coverage.*
+coverage.xml
 htmlcov/
 
 # Environments
@@ -44,3 +46,5 @@ P4__Resource_Aware_Configuration_of_Naive_RAG_Pipelines_for_Technical_Knowledge_
 .DS_Store
 Thumbs.db
 
+# Scratch
+_bash_probe.txt
