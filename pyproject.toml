@@ -50,7 +50,9 @@ analysis = [
   "shap>=0.48"
 ]
 test = [
-  "pytest>=8.0"
+  "pytest>=8.0",
+  "pytest-cov>=5.0",
+  "ruff>=0.6"
 ]
 
 [project.scripts]
@@ -64,4 +66,15 @@ where = ["src"]
 [tool.pytest.ini_options]
 pythonpath = ["src"]
 testpaths = ["tests"]
+addopts = "--cov=evo_rag_hpo --cov-report=term-missing --cov-fail-under=30"
 
+[tool.ruff]
+line-length = 120
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E", "F", "I"]
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"

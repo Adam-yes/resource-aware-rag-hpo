@@ -111,11 +111,14 @@ python -m evo_rag_hpo.optimize --config configs/default.yaml
 python -m evo_rag_hpo.evaluate 1 2 6 0 3 --config configs/default.yaml
 ```
 
+Use `python -m evo_rag_hpo.index --config configs/default.yaml --force` when an existing local Chroma collection should be rebuilt instead of resumed.
+
 ## Reproduce The Study
 
 | Level | Goal | Command or artifact |
 | --- | --- | --- |
 | Smoke test | Validate package imports and lightweight contracts | `python -m compileall src && python -m unittest discover -s tests` |
+| Engineering check | Run the publication-quality local gate | `make check` |
 | Sample analysis | Inspect public samples and selected figures | `results/samples/`, `results/figures/` |
 | Full artifact | Re-run the complete optimization loop | Requires licensed source documents, evaluation set, Ollama, configured models, and full CSV artifacts |
 
@@ -130,6 +133,8 @@ python -m evo_rag_hpo.evaluate   # evaluate a single genotype
 ```
 
 The central runtime configuration is [configs/default.yaml](configs/default.yaml).
+
+Core runtime behavior is explicit in the YAML file: model choices, search space, context-window limits, keep-alive values, evaluation retry policy, failed-candidate fitness, NaN handling, early-stopping patience, and output paths.
 
 ## Data And Model Policy
 

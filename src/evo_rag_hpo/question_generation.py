@@ -34,7 +34,13 @@ def generate_single_hop_testset(
     kg = KnowledgeGraph()
     for doc in splits:
         kg.nodes.append(
-            Node(type=NodeType.DOCUMENT, properties={"page_content": doc.page_content, "document_metadata": doc.metadata})
+            Node(
+                type=NodeType.DOCUMENT,
+                properties={
+                    "page_content": doc.page_content,
+                    "document_metadata": doc.metadata,
+                },
+            )
         )
 
     transforms = default_transforms(documents=docs, llm=generator_llm, embedding_model=generator_embeddings)
@@ -49,4 +55,3 @@ def generate_single_hop_testset(
 
     Path(output_csv).parent.mkdir(parents=True, exist_ok=True)
     testset.to_pandas().to_csv(output_csv, index=False)
-

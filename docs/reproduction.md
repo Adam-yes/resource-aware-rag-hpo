@@ -35,6 +35,12 @@ Build indexes:
 python -m evo_rag_hpo.index --config configs/default.yaml
 ```
 
+Resume behavior is the default: existing local Chroma collections with documents are skipped. Rebuild indexes explicitly when inputs or splitter settings changed:
+
+```bash
+python -m evo_rag_hpo.index --config configs/default.yaml --force
+```
+
 Run optimization:
 
 ```bash
@@ -51,6 +57,14 @@ python -m evo_rag_hpo.evaluate 1 2 6 0 3 --config configs/default.yaml
 
 ```bash
 python -m compileall src
-pytest
+python -m unittest discover -s tests
 ```
 
+For the full local engineering gate, install test extras and run:
+
+```bash
+python -m pip install -e .[test]
+make check
+```
+
+The CI gate is intentionally model-free. Full optimization requires Ollama, configured local models, licensed source documents, and evaluation data that are not redistributed in this repository.
