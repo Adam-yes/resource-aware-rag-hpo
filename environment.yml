@@ -1,0 +1,17 @@
+name: evo-rag
+channels:
+  - conda-forge
+dependencies:
+  - python=3.12
+  - pip
+  - numpy
+  - pandas
+  - scipy
+  - scikit-learn
+  - matplotlib
+  - seaborn
+  - jupyterlab
+  - pyyaml
+  - pip:
+      - -e .[analysis,test]
+

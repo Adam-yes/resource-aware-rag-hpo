@@ -1,0 +1,67 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "resource-aware-rag-hpo"
+version = "0.1.0"
+description = "Evolutionary hyperparameter optimization for resource-aware Naive-RAG pipelines in manufacturing."
+readme = "README.md"
+requires-python = ">=3.12"
+license = { text = "Apache-2.0" }
+authors = [
+  { name = "Adam Michael Altenbuchner" }
+]
+keywords = [
+  "rag",
+  "retrieval-augmented-generation",
+  "hyperparameter-optimization",
+  "genetic-algorithm",
+  "manufacturing",
+  "ollama",
+  "ragas",
+  "langchain",
+  "resource-aware-ai"
+]
+dependencies = [
+  "chromadb>=1.0",
+  "deap>=1.4",
+  "langchain>=1.0",
+  "langchain-chroma>=1.0",
+  "langchain-community>=0.3",
+  "langchain-ollama>=1.0",
+  "langchain-text-splitters>=1.0",
+  "numpy>=2.0",
+  "pandas>=2.2",
+  "pymupdf>=1.26",
+  "pyyaml>=6.0",
+  "ragas>=0.3",
+  "scikit-learn>=1.6",
+  "scipy>=1.14",
+  "tqdm>=4.66"
+]
+
+[project.optional-dependencies]
+analysis = [
+  "jupyterlab>=4.0",
+  "matplotlib>=3.9",
+  "plotly>=5.20",
+  "seaborn>=0.13",
+  "shap>=0.48"
+]
+test = [
+  "pytest>=8.0"
+]
+
+[project.scripts]
+evo-rag-index = "evo_rag_hpo.index:main"
+evo-rag-optimize = "evo_rag_hpo.optimize:main"
+evo-rag-evaluate = "evo_rag_hpo.evaluate:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
+testpaths = ["tests"]
+

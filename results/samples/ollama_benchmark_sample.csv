@@ -1,0 +1,15 @@
+﻿Modell,Size (GB),Params,Quantization,Prompt,Load Time (s),Speed (t/s),Response,Score,Tokens Output
+nemotron-3-nano:30b,24.27,31.6B,Q4_K_M,"Write the word ""strawberry"" ex...",0.05,50.43,"strawberry
+strawberry
+strawberry
+strawberry
+strawberry",1224.05,124
+nemotron-3-nano:30b,24.27,31.6B,Q4_K_M, Describe a scene of a beach a...,12.27,50.03,"The water glowed with molten orange as the day slipped away. Silhouetted gulls traced lazy arcs above the dunes while a gentle breeze carried salty perfume. Footprints vanished in the cooling sand, leaving only the soft hush of retreating tides.",1214.28,540
+qwen3-vl:30b-a3b-instruct,19.6,31.1B,Q4_K_M,"Write the word ""strawberry"" ex...",0.05,60.84,"strawberry
+strawberry
+strawberry
+strawberry
+strawberry",1192.43,20
+qwen3-vl:30b-a3b-instruct,19.6,31.1B,Q4_K_M, Describe a scene of a beach a...,7.69,58.52,"The horizon glows with molten gold, casting long shadows across the wet sand where gentle waves retreat. Silhouettes of distant sailboats drift like dark specks against the radiant backdrop, while seagulls cry softly, their wings catching the last light. Warm breezes carry the scent of salt and seaweed as the world slows, bathed in the soft, fading radiance of the dayâ€™s end.",1147.08,84
+qwen3-vl:30b-a3b-thinking,19.6,31.1B,Q4_K_M,"Write the word ""strawberry"" ex...",0.06,57.31,"strawberry
+strawberry

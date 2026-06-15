@@ -1,0 +1,17 @@
+cff-version: 1.2.0
+message: "Citation metadata will be updated after publication."
+title: "Resource-Aware RAG HPO"
+authors:
+  - family-names: "Altenbuchner"
+    given-names: "Adam Michael"
+type: software
+license: Apache-2.0
+repository-code: "https://github.com/<owner>/resource-aware-rag-hpo"
+abstract: "Evolutionary hyperparameter optimization for resource-aware Naive-RAG pipelines in manufacturing technical knowledge access."
+keywords:
+  - retrieval-augmented generation
+  - hyperparameter optimization
+  - genetic algorithm
+  - manufacturing
+  - resource-aware AI
+

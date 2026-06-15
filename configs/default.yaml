@@ -1,0 +1,50 @@
+paths:
+  raw_documents: data/raw
+  persist_directory: data/chroma_db
+  evaluation_dataset: data/evaluation/evaluation_testset_50_short_query_length.csv
+  hpo_history: results/experiments/hpo_history.csv
+  computation_log: results/experiments/evolution_computation_log.csv
+
+models:
+  embedding: embeddinggemma:300m
+  judge: qwen3-coder:30b
+
+optimization:
+  population_size: 42
+  max_generations: 7
+  hall_of_fame_size: 1
+  crossover_probability: 0.7
+  mutation_probability: 0.4
+  individual_mutation_probability: 0.2
+  random_seed: 42
+  tournament_size: 3
+  early_stopping_min_improvement: 0.05
+
+search_space:
+  chunk_size: [128, 256, 384, 512, 640, 768, 896, 1024]
+  chunk_overlap: [0, 12.5, 25]
+  top_k: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+  temperature: [0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0]
+  model_name:
+    - qwen2.5-coder:0.5b-instruct
+    - granite4:350m
+    - gemma3:1b
+    - qwen2.5-coder:1.5b-instruct
+    - deepseek-r1:1.5b
+    - qwen3:1.7b
+    - granite3.1-moe:1b
+    - granite3.3:2b
+    - qwen3-vl:2b-thinking
+    - qwen3-vl:2b-instruct
+    - qwen2.5-coder:3b-instruct
+    - granite3.1-moe:3b
+    - granite4:micro
+    - phi4-mini:3.8b-q4_K_M
+    - qwen2.5vl:3b
+    - gemma3:4b
+    - granite4:tiny-h
+    - gemma3n:e2b
+    - qwen3-coder:30b
+    - gpt-oss:20b
+    - qwen3-vl:30b-a3b-instruct
+

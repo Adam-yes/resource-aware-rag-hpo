@@ -1,0 +1,46 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# Environments
+.venv/
+venv/
+env/
+icme/
+
+# Local tooling
+.vscode/
+.idea/
+
+# Legacy/raw working folders
+BackUp/
+Paper-Plotts/
+Einreichungen/
+Bilder/
+
+# Data and generated artifacts
+data/raw/
+data/external/
+data/processed/
+data/chroma_db/
+*.sqlite3
+*.parquet
+results/experiments/*.csv
+!results/experiments/.gitkeep
+!results/samples/*.csv
+
+# Manuscripts and submission artifacts
+*.docx
+P4__Resource_Aware_Configuration_of_Naive_RAG_Pipelines_for_Technical_Knowledge_Access_in_Smart_Manufacturing_via_Evolutionary_Hyperparameter_Search-5.pdf
+
+# OS files
+.DS_Store
+Thumbs.db
+
