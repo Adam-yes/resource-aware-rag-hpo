@@ -34,39 +34,22 @@ This repository turns RAG configuration into an engineering optimization problem
 
 ## Results At A Glance
 
-<table>
-  <tr>
-    <td align="center"><b>~80%</b><br><sub>average fitness increase over the initial random population</sub></td>
-    <td align="center"><b>152</b><br><sub>unique configurations evaluated by evolutionary search</sub></td>
-    <td align="center"><b>&gt;99%</b><br><sub>fewer evaluations than exhaustive grid search</sub></td>
-    <td align="center"><b>86% quality</b><br><sub>from compact models at 7% of best-configuration inference time</sub></td>
-  </tr>
-</table>
+<p align="center">
+  <img src="docs/assets/results-overview.svg" alt="Results overview" width="100%">
+</p>
 
-## Visual Evidence
+## Paper Figures
 
-<table>
-  <tr>
-    <td width="50%">
-      <img src="results/figures/Konvergenz_Max_Avg.png" alt="Optimization convergence">
-      <br><sub><b>Optimization convergence.</b> Average and maximum fitness improve over generations.</sub>
-    </td>
-    <td width="50%">
-      <img src="results/figures/max_fit_vs_latency.png" alt="Quality latency tradeoff">
-      <br><sub><b>Quality-latency tradeoff.</b> Compact local models can be operationally attractive.</sub>
-    </td>
-  </tr>
-  <tr>
-    <td width="50%">
-      <img src="results/figures/Feature_Importance_Random_Forest.png" alt="Feature importance">
-      <br><sub><b>Feature importance.</b> Retrieval depth, model choice, and chunk size drive performance.</sub>
-    </td>
-    <td width="50%">
-      <img src="results/figures/heatmap_f1_temp_chunk_top.png" alt="Hyperparameter interaction heatmap">
-      <br><sub><b>Parameter interactions.</b> Isolated one-factor tuning misses important behavior.</sub>
-    </td>
-  </tr>
-</table>
+The README uses a custom results overview so the public landing page keeps consistent typography and visual scale. The original paper figures remain available as full-size artifacts:
+
+| Figure | What it shows |
+| --- | --- |
+| [Optimization convergence](results/figures/Konvergenz_Max_Avg.png) | Average and maximum fitness over generations |
+| [Quality-latency tradeoff](results/figures/max_fit_vs_latency.png) | Fitness versus inference-time behavior |
+| [Feature importance](results/figures/Feature_Importance_Random_Forest.png) | Relative influence of core RAG hyperparameters |
+| [Interaction heatmap](results/figures/heatmap_f1_temp_chunk_top.png) | Interaction between retrieval depth, chunking, and temperature |
+| [Model clusters](results/figures/model_cluster.png) | Grouping of model behavior in the search results |
+| [Top-k distribution](results/figures/Top_k_distribution.png) | Evolutionary concentration over retrieval depth |
 
 ## System Architecture
 

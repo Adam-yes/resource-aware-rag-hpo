@@ -1,0 +1,66 @@
+<svg width="1280" height="760" viewBox="0 0 1280 760" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc">
+  <title id="title">Resource-Aware RAG HPO results overview</title>
+  <desc id="desc">A consistent visual summary of the study findings: fitness improvement, search efficiency, quality-latency tradeoff, and key drivers.</desc>
+  <rect width="1280" height="760" fill="#F7F8FA"/>
+  <rect x="54" y="50" width="1172" height="660" rx="24" fill="#FFFFFF" stroke="#D8DEE8" stroke-width="2"/>
+
+  <text x="94" y="104" fill="#16202A" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="34" font-weight="760">Results Overview</text>
+  <text x="94" y="136" fill="#52606D" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="17">Curated findings from the evolutionary search over local resource-aware Naive-RAG configurations.</text>
+
+  <g font-family="Inter, Segoe UI, Arial, sans-serif">
+    <rect x="94" y="176" width="260" height="150" rx="18" fill="#16202A"/>
+    <text x="124" y="222" fill="#FFFFFF" font-size="46" font-weight="780">~80%</text>
+    <text x="126" y="257" fill="#DDE5EF" font-size="18" font-weight="700">fitness increase</text>
+    <text x="126" y="286" fill="#AAB7C6" font-size="14">Average fitness improved over</text>
+    <text x="126" y="306" fill="#AAB7C6" font-size="14">the initial random population.</text>
+
+    <rect x="374" y="176" width="260" height="150" rx="18" fill="#EAF7F4" stroke="#66B7A6" stroke-width="2"/>
+    <text x="404" y="222" fill="#15352F" font-size="46" font-weight="780">152</text>
+    <text x="406" y="257" fill="#15352F" font-size="18" font-weight="700">unique configurations</text>
+    <text x="406" y="286" fill="#355B53" font-size="14">Search concentrated evaluation</text>
+    <text x="406" y="306" fill="#355B53" font-size="14">budget on promising candidates.</text>
+
+    <rect x="654" y="176" width="260" height="150" rx="18" fill="#FFF4E0" stroke="#E0A13D" stroke-width="2"/>
+    <text x="684" y="222" fill="#4A3010" font-size="46" font-weight="780">&gt;99%</text>
+    <text x="686" y="257" fill="#4A3010" font-size="18" font-weight="700">fewer evaluations</text>
+    <text x="686" y="286" fill="#71511E" font-size="14">Compared with exhaustive grid</text>
+    <text x="686" y="306" fill="#71511E" font-size="14">search over the defined space.</text>
+
+    <rect x="934" y="176" width="260" height="150" rx="18" fill="#EDF2FF" stroke="#6E88D8" stroke-width="2"/>
+    <text x="964" y="222" fill="#202E57" font-size="46" font-weight="780">86%</text>
+    <text x="1042" y="222" fill="#202E57" font-size="22" font-weight="760">quality</text>
+    <text x="966" y="257" fill="#202E57" font-size="18" font-weight="700">at 7% inference time</text>
+    <text x="966" y="286" fill="#41537E" font-size="14">Compact models expose practical</text>
+    <text x="966" y="306" fill="#41537E" font-size="14">deployment tradeoffs.</text>
+
+    <rect x="94" y="370" width="540" height="278" rx="18" fill="#FFFFFF" stroke="#D8DEE8" stroke-width="2"/>
+    <text x="126" y="414" fill="#16202A" font-size="22" font-weight="760">Optimization signal</text>
+    <text x="126" y="442" fill="#52606D" font-size="15">The search raises both average and best observed fitness.</text>
+    <line x1="136" y1="584" x2="582" y2="584" stroke="#C7D0DD" stroke-width="2"/>
+    <line x1="136" y1="476" x2="136" y2="584" stroke="#C7D0DD" stroke-width="2"/>
+    <polyline points="146,570 206,552 266,534 326,511 386,492 446,474 566,454" stroke="#16202A" stroke-width="5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+    <polyline points="146,566 206,561 266,548 326,536 386,520 446,508 566,488" stroke="#66B7A6" stroke-width="5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+    <circle cx="566" cy="454" r="7" fill="#16202A"/>
+    <circle cx="566" cy="488" r="7" fill="#66B7A6"/>
+    <text x="144" y="615" fill="#52606D" font-size="13">generation 0</text>
+    <text x="506" y="615" fill="#52606D" font-size="13">final generation</text>
+    <rect x="384" y="395" width="20" height="6" rx="3" fill="#16202A"/>
+    <text x="412" y="402" fill="#52606D" font-size="13">best fitness</text>
+    <rect x="506" y="395" width="20" height="6" rx="3" fill="#66B7A6"/>
+    <text x="534" y="402" fill="#52606D" font-size="13">average fitness</text>
+
+    <rect x="654" y="370" width="540" height="278" rx="18" fill="#FFFFFF" stroke="#D8DEE8" stroke-width="2"/>
+    <text x="686" y="414" fill="#16202A" font-size="22" font-weight="760">Configuration drivers</text>
+    <text x="686" y="442" fill="#52606D" font-size="15">Performance is driven by interacting retrieval and generation choices.</text>
+    <text x="704" y="493" fill="#394B59" font-size="15" font-weight="700">top_k</text>
+    <rect x="828" y="476" width="292" height="24" rx="12" fill="#EAF7F4"/>
+    <rect x="828" y="476" width="246" height="24" rx="12" fill="#66B7A6"/>
+    <text x="704" y="542" fill="#394B59" font-size="15" font-weight="700">model choice</text>
+    <rect x="828" y="525" width="292" height="24" rx="12" fill="#EDF2FF"/>
+    <rect x="828" y="525" width="220" height="24" rx="12" fill="#6E88D8"/>
+    <text x="704" y="591" fill="#394B59" font-size="15" font-weight="700">chunk size</text>
+    <rect x="828" y="574" width="292" height="24" rx="12" fill="#FFF4E0"/>
+    <rect x="828" y="574" width="184" height="24" rx="12" fill="#E0A13D"/>
+    <text x="704" y="624" fill="#52606D" font-size="13">Relative importance summary for landing-page orientation.</text>
+  </g>
+</svg>
